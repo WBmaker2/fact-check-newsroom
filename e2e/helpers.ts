@@ -16,7 +16,7 @@ export async function openKoreanEvidenceBoard(page: Page) {
   await page.getByRole('button', { name: /이 자료로 근거 분류하기/ }).click();
 }
 
-export async function completeKoreanFlow(page: Page) {
+export async function openKoreanInitialVerdict(page: Page) {
   await openKoreanEvidenceBoard(page);
   const expected = [
     ['주장을 지지해요', '주장을 지지해요', '주장을 지지해요'],
@@ -31,6 +31,10 @@ export async function completeKoreanFlow(page: Page) {
   }
   await cards.nth(0).getByRole('button', { name: /판정 근거로 사용/ }).click();
   await page.getByRole('button', { name: /이 근거로 첫 판정하기/ }).click();
+}
+
+export async function completeKoreanFlow(page: Page) {
+  await openKoreanInitialVerdict(page);
   await page.getByRole('button', { name: '자료로 확인됨' }).click();
   await page.getByText('원문 안내의 대상·날짜·예정 상태가 주장과 일치해요.').click();
   await page.getByText('“반가운”은 의견이라 사실 판정에서 제외했어요.').click();

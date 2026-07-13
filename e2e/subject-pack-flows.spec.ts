@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { completeKoreanFlow, openKoreanCase, openKoreanEvidenceBoard } from './helpers';
+import { completeKoreanFlow, openKoreanCase, openKoreanEvidenceBoard, openKoreanInitialVerdict } from './helpers';
 
 test('시작 화면은 가상 자료와 개인정보 비수집 원칙을 알린다', async ({ page }) => {
   await page.goto('/');
@@ -35,6 +35,17 @@ test('근거 분류에서 각 자료 내용을 다시 보여 준다', async ({ p
   await openKoreanEvidenceBoard(page);
   await expect(page.getByText('자료 내용 다시 보기')).toHaveCount(4);
   await expect(page.getByText('첫째·셋째 토요일 10:00~14:00에 어린이 열람실을 운영할 예정입니다.')).toBeVisible();
+});
+
+test('4단계는 판정할 주장과 해결 순서 및 선택 상태를 안내한다', async ({ page }) => {
+  await openKoreanInitialVerdict(page);
+  await expect(page.getByRole('heading', { name: '4단계는 이렇게 해결하세요' })).toBeVisible();
+  await expect(page.getByText(/반가운 소식.*어린이 열람실/)).toBeVisible();
+  await expect(page.getByText('판정 선택 필요')).toBeVisible();
+  await page.getByRole('button', { name: /자료로 확인됨/ }).click();
+  await expect(page.getByText('판정 선택 완료')).toBeVisible();
+  await page.getByText('원문 안내의 대상·날짜·예정 상태가 주장과 일치해요.').click();
+  await expect(page.getByText('이유 1개 선택됨')).toBeVisible();
 });
 
 test('국어 사건 전체 흐름에서 첫 판정과 최종 판정을 보존한다', async ({ page }) => {
