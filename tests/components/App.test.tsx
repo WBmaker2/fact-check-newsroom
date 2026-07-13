@@ -16,7 +16,8 @@ describe('App shell and intake', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: '업데이트 내역' }));
     expect(screen.getByRole('dialog', { name: '업데이트 내역' })).toBeInTheDocument();
-    expect(screen.getByText('2026. 7. 14.')).toBeInTheDocument();
+    expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(2);
+    expect(screen.getByText('공개 배포 준비')).toBeInTheDocument();
   });
 
   it('renders four subject desks from the registry', async () => {
