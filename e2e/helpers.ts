@@ -6,7 +6,7 @@ export async function openKoreanCase(page: Page) {
   await page.getByRole('button', { name: /국어·매체 사건 선택/ }).click();
 }
 
-export async function completeKoreanFlow(page: Page) {
+export async function openKoreanEvidenceBoard(page: Page) {
   await openKoreanCase(page);
   for (const name of ['어린이 열람실', '2026년 6월 첫째 토요일', '운영할 예정']) await page.getByRole('button', { name: new RegExp(name) }).click();
   await page.getByRole('button', { name: /출처 데스크 열기/ }).click();
@@ -14,6 +14,10 @@ export async function completeKoreanFlow(page: Page) {
     for (const button of await page.getByRole('button', { name: new RegExp(label) }).all()) await button.click();
   }
   await page.getByRole('button', { name: /이 자료로 근거 분류하기/ }).click();
+}
+
+export async function completeKoreanFlow(page: Page) {
+  await openKoreanEvidenceBoard(page);
   const expected = [
     ['주장을 지지해요', '주장을 지지해요', '주장을 지지해요'],
     ['말할 수 있는 범위를 줄여요', '말할 수 있는 범위를 줄여요', '주장을 지지해요'],

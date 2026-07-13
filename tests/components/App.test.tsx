@@ -16,7 +16,8 @@ describe('App shell and intake', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: '업데이트 내역' }));
     expect(screen.getByRole('dialog', { name: '업데이트 내역' })).toBeInTheDocument();
-    expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(2);
+    expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(3);
+    expect(screen.getByText('근거 분류 자료 다시 보기')).toBeInTheDocument();
     expect(screen.getByText('공개 배포 준비')).toBeInTheDocument();
   });
 

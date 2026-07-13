@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { completeKoreanFlow, openKoreanCase } from './helpers';
+import { completeKoreanFlow, openKoreanCase, openKoreanEvidenceBoard } from './helpers';
 
 test('시작 화면은 가상 자료와 개인정보 비수집 원칙을 알린다', async ({ page }) => {
   await page.goto('/');
@@ -29,6 +29,12 @@ test('재게시 자료는 같은 원자료임을 표시한다', async ({ page })
   for (const name of ['어린이 열람실', '2026년 6월 첫째 토요일', '운영할 예정']) await page.getByRole('button', { name: new RegExp(name) }).click();
   await page.getByRole('button', { name: /출처 데스크 열기/ }).click();
   await expect(page.getByText(/같은 원자료를 옮긴 자료/)).toBeVisible();
+});
+
+test('근거 분류에서 각 자료 내용을 다시 보여 준다', async ({ page }) => {
+  await openKoreanEvidenceBoard(page);
+  await expect(page.getByText('자료 내용 다시 보기')).toHaveCount(4);
+  await expect(page.getByText('첫째·셋째 토요일 10:00~14:00에 어린이 열람실을 운영할 예정입니다.')).toBeVisible();
 });
 
 test('국어 사건 전체 흐름에서 첫 판정과 최종 판정을 보존한다', async ({ page }) => {
