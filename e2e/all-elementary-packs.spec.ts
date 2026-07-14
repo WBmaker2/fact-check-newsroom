@@ -37,7 +37,7 @@ async function classifyVisibleSources(page: Page, pack: FactCheckPack, sourceIds
 
 async function completePack(page: Page, pack: FactCheckPack) {
   const caseFile = pack.cases[0];
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: '편집 회의 시작' }).click();
   await page.getByRole('button', { name: new RegExp(`${pack.subjectLabel} 사건 선택`) }).click();
   for (const atom of caseFile.atoms.filter((item) => item.required)) await page.getByRole('button', { name: new RegExp(atom.text) }).click();
