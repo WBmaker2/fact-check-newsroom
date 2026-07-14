@@ -8,7 +8,7 @@ export function DeskPicker({ packs, onSelect }: { packs: FactCheckPack[]; onSele
     <div className="desk-list">
       {packs.map((pack) => { const Icon = icons[pack.iconToken]; return <article className="desk-row" key={pack.id}>
         <div className={`desk-icon accent-${pack.accentToken}`}><Icon aria-hidden="true" /></div>
-        <div><span className="synthetic-tag">가상 자료</span><h2>{pack.subjectLabel}</h2><p>{pack.shortDescription}</p><small>예상 시간 18~22분</small></div>
+        <div><span className="synthetic-tag">가상 자료</span><h2>{pack.subjectLabel}</h2><p>{pack.shortDescription}</p><small>예상 시간 10~15분</small></div>
         <button className="button button-secondary" onClick={() => onSelect(pack.id)}>{pack.subjectLabel} 사건 선택</button>
       </article>; })}
     </div>

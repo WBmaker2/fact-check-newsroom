@@ -54,12 +54,12 @@ export function newsroomReducer(state: NewsroomState, action: Action): NewsroomS
     case 'CLASSIFY': return { ...state, relations: { ...state.relations, [action.sourceId]: { ...state.relations[action.sourceId], [action.atomId]: action.relation } } };
     case 'TOGGLE_EVIDENCE': {
       if (state.selectedSourceIds.includes(action.sourceId)) return { ...state, selectedSourceIds: state.selectedSourceIds.filter((id) => id !== action.sourceId) };
-      if (state.selectedSourceIds.length >= 3) return { ...state, feedback: '판정 근거는 3개까지 선택할 수 있어요.' };
+      if (state.selectedSourceIds.length >= 2) return { ...state, feedback: '판정에 사용할 자료는 2개까지 고를 수 있어요.' };
       return { ...state, selectedSourceIds: [...state.selectedSourceIds, action.sourceId], feedback: '' };
     }
     case 'SAVE_DECISION': {
       const snapshot = { checkpoint: action.checkpoint, verdict: action.verdict, reasonIds: [...action.reasonIds], selectedSourceIds: [...state.selectedSourceIds], relations: cloneRelations(state.relations) };
-      return action.checkpoint === 'initial' ? { ...state, initialDecision: snapshot, stage: 'late', feedback: '' } : { ...state, finalDecision: snapshot, stage: 'headline', feedback: '' };
+      return action.checkpoint === 'initial' ? { ...state, initialDecision: snapshot, selectedSourceIds: [], stage: 'late', feedback: '' } : { ...state, finalDecision: snapshot, stage: 'headline', feedback: '' };
     }
     case 'SET_HEADLINE': return { ...state, headline: action.headline };
     case 'FEEDBACK': return { ...state, feedback: action.message };

@@ -10,6 +10,12 @@ describe('initial subject packs', () => {
     expect(packRegistry.flatMap((pack) => pack.sources).every((source) => source.synthetic)).toBe(true);
   });
 
+  it('keeps the elementary flow to three initial sources and two checkable claim parts', () => {
+    const cases = packRegistry.flatMap((pack) => pack.cases);
+    expect(cases.every((caseFile) => caseFile.initialSourceIds.length === 3)).toBe(true);
+    expect(cases.every((caseFile) => caseFile.atoms.filter((atom) => atom.checkable).length === 2)).toBe(true);
+  });
+
   it('covers the four verdict types', () => {
     expect(new Set(packRegistry.map((pack) => pack.cases[0].finalVerdict))).toEqual(new Set(['confirmed', 'partly-confirmed', 'insufficient', 'contradicted']));
   });

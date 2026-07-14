@@ -8,7 +8,7 @@ describe('SourceCardView', () => {
   it('shows publisher date method and scope without a trust score', () => {
     render(<SourceCardView source={source} inspected={[]} onInspect={vi.fn()} />);
     expect(screen.getByText(source.publisherLabel)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /날짜 확인/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /언제 만들었나요/ })).toBeInTheDocument();
     expect(screen.queryByText(/신뢰 점수|별점/)).not.toBeInTheDocument();
   });
 

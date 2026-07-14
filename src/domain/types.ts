@@ -26,6 +26,8 @@ export interface FactCheckCase {
   lateSourceId: string;
   initialVerdict: Verdict;
   finalVerdict: Verdict;
+  decisionClues: Record<Checkpoint, string>;
+  decisionHints: Record<Checkpoint, string>;
   reasonOptions: ReasonOption[];
   headlineOptions: string[];
 }

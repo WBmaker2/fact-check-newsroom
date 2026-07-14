@@ -18,10 +18,10 @@ describe('newsroomReducer', () => {
     expect(next.relations).toEqual({ s1: { a1: 'supports' } });
   });
 
-  it('limits selected evidence to three sources', () => {
+  it('limits selected evidence to two sources', () => {
     let state = initialState;
     for (const sourceId of ['s1', 's2', 's3', 's4']) state = newsroomReducer(state, { type: 'TOGGLE_EVIDENCE', sourceId });
-    expect(state.selectedSourceIds).toEqual(['s1', 's2', 's3']);
+    expect(state.selectedSourceIds).toEqual(['s1', 's2']);
   });
 
   it('stores the initial verdict as a deep snapshot', () => {
@@ -29,6 +29,13 @@ describe('newsroomReducer', () => {
     const saved = newsroomReducer(withRelation, { type: 'SAVE_DECISION', checkpoint: 'initial', verdict: 'confirmed', reasonIds: ['r1'] });
     const changed = newsroomReducer(saved, { type: 'CLASSIFY', sourceId: 's1', atomId: 'a1', relation: 'limits' });
     expect(changed.initialDecision?.relations.s1.a1).toBe('supports');
+  });
+
+  it('clears evidence picks after the first decision for the new source', () => {
+    const selected = newsroomReducer(initialState, { type: 'TOGGLE_EVIDENCE', sourceId: 's1' });
+    const saved = newsroomReducer(selected, { type: 'SAVE_DECISION', checkpoint: 'initial', verdict: 'confirmed', reasonIds: ['r1'] });
+    expect(saved.initialDecision?.selectedSourceIds).toEqual(['s1']);
+    expect(saved.selectedSourceIds).toEqual([]);
   });
 
   it('preserves the first decision while saving the final decision', () => {

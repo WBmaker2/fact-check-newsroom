@@ -8,8 +8,10 @@ const makePack = (): FactCheckPack => ({
   cases: [{
     id: 'sample-case', claimText: '가상 기관의 합성 주장', synthetic: true,
     atoms: [{ id: 'subject', kind: 'subject', text: '가상 기관', checkable: true, required: true }],
-    initialSourceIds: ['s1', 's2', 's3', 's4'], lateSourceId: 's5',
+    initialSourceIds: ['s1', 's2', 's3'], lateSourceId: 's5',
     initialVerdict: 'confirmed', finalVerdict: 'confirmed',
+    decisionClues: { initial: '핵심 비교', final: '새 자료 비교' },
+    decisionHints: { initial: '첫 자료를 다시 보세요.', final: '새 자료를 다시 보세요.' },
     reasonOptions: [{ id: 'r1', label: '직접 자료가 뒷받침해요', correctAt: ['initial', 'final'] }],
     headlineOptions: ['가상 기관의 합성 자료로 확인된 범위'],
   }],
@@ -27,16 +29,25 @@ describe('validatePackRegistry', () => {
     expect(validatePackRegistry([makePack()]).errors).toEqual([]);
   });
 
-  it('requires exactly four initial sources and one late source', () => {
+  it('requires exactly three initial sources and one late source', () => {
     const pack = makePack();
-    pack.cases[0].initialSourceIds = ['s1', 's2', 's3'];
-    expect(validatePackRegistry([pack]).errors).toContain('sample-case: 처음 출처는 4개여야 합니다.');
+    pack.cases[0].initialSourceIds = ['s1', 's2'];
+    expect(validatePackRegistry([pack]).errors).toContain('sample-case: 처음 출처는 3개여야 합니다.');
   });
 
   it('rejects missing structured assessments', () => {
     const pack = makePack();
     pack.sources[0].assessments = {};
     expect(validatePackRegistry([pack]).errors.some((error) => error.includes('관계 평가가 없습니다'))).toBe(true);
+  });
+
+  it('requires one correct reason and a clue for each checkpoint', () => {
+    const pack = makePack();
+    pack.cases[0].reasonOptions[0].correctAt = ['initial'];
+    pack.cases[0].decisionClues.final = '';
+    const errors = validatePackRegistry([pack]).errors;
+    expect(errors).toContain('sample-case/final: 정답 이유는 정확히 1개여야 합니다.');
+    expect(errors).toContain('sample-case/final: 핵심 비교 문장이 필요합니다.');
   });
 
   it('rejects duplicate ids and external urls', () => {

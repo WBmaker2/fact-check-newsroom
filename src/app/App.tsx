@@ -14,6 +14,7 @@ import { VerdictConference } from '../components/VerdictConference';
 import { packRegistry } from '../content/registry';
 import { evaluateDecision } from '../domain/verdict-engine';
 import type { Verdict } from '../domain/types';
+import { dimensions } from '../components/source-dimensions';
 import { initialState, newsroomReducer } from './newsroom-reducer';
 import '../styles/tokens.css';
 import '../styles/layout.css';
@@ -35,7 +36,7 @@ export function App() {
   const submitDecision = (checkpoint: 'initial' | 'final', verdict: Verdict, reasonIds: string[]) => {
     if (!caseFile || !pack) return;
     const sources = checkpoint === 'initial' ? pack.sources.filter((source) => caseFile.initialSourceIds.includes(source.id)) : pack.sources;
-    const inspected = sources.filter((source) => (state.inspectedDimensions[source.id]?.length ?? 0) === 4).map((source) => source.id);
+    const inspected = sources.filter((source) => (state.inspectedDimensions[source.id]?.length ?? 0) === dimensions.length).map((source) => source.id);
     const result = evaluateDecision({ caseFile, checkpoint, sources, relations: state.relations, selectedSourceIds: state.selectedSourceIds, inspectedSourceIds: inspected, verdict, reasonIds });
     if (!result.matched) dispatch({ type: 'FEEDBACK', message: result.feedback });
     else dispatch({ type: 'SAVE_DECISION', checkpoint, verdict, reasonIds });
@@ -53,7 +54,7 @@ export function App() {
   else if (state.stage === 'late') screen = <EvidenceBoard late atoms={caseFile.atoms} sources={pack.sources.filter((source) => source.id === caseFile.lateSourceId)} classified={state.relations} selectedSources={state.selectedSourceIds} onClassify={(sourceId, atomId, relation) => dispatch({ type: 'CLASSIFY', sourceId, atomId, relation })} onToggleEvidence={(sourceId) => dispatch({ type: 'TOGGLE_EVIDENCE', sourceId })} onContinue={() => dispatch({ type: 'GO', stage: 'final' })} />;
   else if (state.stage === 'final') screen = <VerdictConference caseFile={caseFile} checkpoint="final" initialVerdict={state.initialDecision?.verdict} feedback={state.feedback} onSubmit={(verdict, reasonIds) => submitDecision('final', verdict, reasonIds)} />;
   else if (state.stage === 'headline') screen = <HeadlineComposer options={caseFile.headlineOptions} selected={state.headline} onSelect={(headline) => dispatch({ type: 'SET_HEADLINE', headline })} onContinue={() => dispatch({ type: 'GO', stage: 'result' })} />;
-  else screen = <FactCheckResultCard caseFile={caseFile} sources={pack.sources} first={state.initialDecision!.verdict} final={state.finalDecision!.verdict} headline={state.headline} selectedSourceIds={state.selectedSourceIds} onRestart={reset} />;
+  else screen = <FactCheckResultCard caseFile={caseFile} sources={pack.sources} first={state.initialDecision!.verdict} final={state.finalDecision!.verdict} headline={state.headline} selectedSourceIds={[...(state.initialDecision?.selectedSourceIds ?? []), ...(state.finalDecision?.selectedSourceIds ?? [])]} onRestart={reset} />;
 
   return <div className="app-shell"><AppHeader onHistory={() => openModal('history')} onReset={() => openModal('reset')} canReset={state.stage !== 'start'} />{!['start', 'desk'].includes(state.stage) ? <StepProgress stage={state.stage} /> : null}<div className="global-notice">교육용 가상 사건 · 합성 자료</div><main id="main">{screen}</main><footer>이 판정은 화면에 제시된 가상 자료를 기준으로 합니다.</footer>{historyOpen ? <UpdateHistoryDialog onClose={() => closeModal('history')} /> : null}{resetOpen ? <ResetDialog onCancel={() => closeModal('reset')} onConfirm={reset} /> : null}</div>;
 }

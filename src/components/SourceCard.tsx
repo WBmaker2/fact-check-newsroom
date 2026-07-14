@@ -15,7 +15,7 @@ export function SourceCardView({ source, inspected, onInspect, compact = false }
     <div className="lens-list" aria-label="출처 점검 렌즈">
       {dimensions.map(({ id, label, icon: Icon }) => {
         const checked = inspected.includes(id);
-        return <button key={id} className="lens-button" aria-pressed={checked} onClick={() => onInspect(id)}><span><Icon aria-hidden="true" />{label} 확인</span>{checked ? <><Check aria-hidden="true" /><small>{detail(source, id)}</small></> : null}</button>;
+        return <button key={id} className="lens-button" aria-pressed={checked} onClick={() => onInspect(id)}><span><Icon aria-hidden="true" />{label}</span>{checked ? <><Check aria-hidden="true" /><small>{detail(source, id)}</small></> : null}</button>;
       })}
     </div>
   </article>;

@@ -16,7 +16,8 @@ describe('App shell and intake', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: '업데이트 내역' }));
     expect(screen.getByRole('dialog', { name: '업데이트 내역' })).toBeInTheDocument();
-    expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(4);
+    expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(5);
+    expect(screen.getByText('초등 난이도 개선')).toBeInTheDocument();
     expect(screen.getByText('4단계 판정 안내 개선')).toBeInTheDocument();
     expect(screen.getByText('근거 분류 자료 다시 보기')).toBeInTheDocument();
     expect(screen.getByText('공개 배포 준비')).toBeInTheDocument();
@@ -34,7 +35,7 @@ describe('App shell and intake', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: '편집 회의 시작' }));
     await user.click(screen.getByRole('button', { name: /국어·매체 사건 선택/ }));
-    expect(screen.getByRole('button', { name: /반가운 소식/ })).toBeDisabled();
-    expect(screen.getByText(/의견이라 자료로 참·거짓을 가리지 않아요/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /좋은 소식/ })).toBeDisabled();
+    expect(screen.getByText(/느낌을 나타내므로 맞는지 틀린지 확인하지 않아요/)).toBeInTheDocument();
   });
 });

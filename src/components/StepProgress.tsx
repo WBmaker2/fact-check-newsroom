@@ -1,11 +1,11 @@
 import type { Stage } from '../app/newsroom-reducer';
 
 const steps = [
-  { label: '주장 해부', stages: ['claim'] },
-  { label: '출처 점검', stages: ['sources', 'late'] },
-  { label: '근거 분류', stages: ['evidence'] },
-  { label: '판정', stages: ['initial', 'final'] },
-  { label: '결과 정리', stages: ['headline', 'result'] },
+  { label: '확인할 말', stages: ['claim'] },
+  { label: '자료 보기', stages: ['sources', 'late'] },
+  { label: '자료 비교', stages: ['evidence'] },
+  { label: '판단하기', stages: ['initial', 'final'] },
+  { label: '제목 고르기', stages: ['headline', 'result'] },
 ];
 
 export function StepProgress({ stage }: { stage: Stage }) {

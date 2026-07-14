@@ -14,44 +14,45 @@ test('네 교과 데스크를 동적으로 보여 준다', async ({ page }) => {
 
 test('의견 조각은 진위 선택에서 제외한다', async ({ page }) => {
   await openKoreanCase(page);
-  await expect(page.getByRole('button', { name: /반가운 소식/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /좋은 소식/ })).toBeDisabled();
 });
 
 test('출처 렌즈를 확인하기 전에는 근거 분류로 갈 수 없다', async ({ page }) => {
   await openKoreanCase(page);
-  for (const name of ['어린이 열람실', '2026년 6월 첫째 토요일', '운영할 예정']) await page.getByRole('button', { name: new RegExp(name) }).click();
-  await page.getByRole('button', { name: /출처 데스크 열기/ }).click();
-  await expect(page.getByRole('button', { name: /이 자료로 근거 분류하기/ })).toBeDisabled();
+  for (const name of ['어린이 열람실', '6월 첫째 토요일에 연다']) await page.getByRole('button', { name: new RegExp(name) }).click();
+  await page.getByRole('button', { name: /자료 살펴보기/ }).click();
+  await expect(page.getByRole('button', { name: /자료와 주장 비교하기/ })).toBeDisabled();
 });
 
 test('재게시 자료는 같은 원자료임을 표시한다', async ({ page }) => {
   await openKoreanCase(page);
-  for (const name of ['어린이 열람실', '2026년 6월 첫째 토요일', '운영할 예정']) await page.getByRole('button', { name: new RegExp(name) }).click();
-  await page.getByRole('button', { name: /출처 데스크 열기/ }).click();
+  for (const name of ['어린이 열람실', '6월 첫째 토요일에 연다']) await page.getByRole('button', { name: new RegExp(name) }).click();
+  await page.getByRole('button', { name: /자료 살펴보기/ }).click();
   await expect(page.getByText(/같은 원자료를 옮긴 자료/)).toBeVisible();
 });
 
 test('근거 분류에서 각 자료 내용을 다시 보여 준다', async ({ page }) => {
   await openKoreanEvidenceBoard(page);
-  await expect(page.getByText('자료 내용 다시 보기')).toHaveCount(4);
-  await expect(page.getByText('첫째·셋째 토요일 10:00~14:00에 어린이 열람실을 운영할 예정입니다.')).toBeVisible();
+  await expect(page.getByText('자료 내용')).toHaveCount(3);
+  await expect(page.getByText('6월 첫째·셋째 토요일에 어린이 열람실을 엽니다.')).toBeVisible();
 });
 
 test('4단계는 판정할 주장과 해결 순서 및 선택 상태를 안내한다', async ({ page }) => {
   await openKoreanInitialVerdict(page);
-  await expect(page.getByRole('heading', { name: '4단계는 이렇게 해결하세요' })).toBeVisible();
-  await expect(page.getByText(/반가운 소식.*어린이 열람실/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: '세 가지만 하면 돼요' })).toBeVisible();
+  await expect(page.getByText(/좋은 소식.*어린이 열람실/)).toBeVisible();
+  await expect(page.getByText(/도서관 원문에는 어린이 열람실/)).toBeVisible();
   await expect(page.getByText('판정 선택 필요')).toBeVisible();
-  await page.getByRole('button', { name: /자료로 확인됨/ }).click();
+  await page.getByRole('button', { name: /맞아요.*자료로 확인됨/ }).click();
   await expect(page.getByText('판정 선택 완료')).toBeVisible();
-  await page.getByText('원문 안내의 대상·날짜·예정 상태가 주장과 일치해요.').click();
-  await expect(page.getByText('이유 1개 선택됨')).toBeVisible();
+  await page.getByText('도서관 원문에 어린이 열람실과 첫째 토요일이 모두 적혀 있어요.').click();
+  await expect(page.getByText('이유 선택 완료')).toBeVisible();
 });
 
 test('국어 사건 전체 흐름에서 첫 판정과 최종 판정을 보존한다', async ({ page }) => {
   await completeKoreanFlow(page);
   await expect(page.getByRole('heading', { name: '팩트체크 결과 카드' })).toBeVisible();
-  await expect(page.getByText('자료로 확인됨')).toHaveCount(2);
+  await expect(page.getByText(/맞아요 · 자료로 확인됨/)).toHaveCount(2);
 });
 
 test('결과 카드는 읽기 전용이고 게시·공유 기능이 없다', async ({ page }) => {
@@ -63,5 +64,5 @@ test('결과 카드는 읽기 전용이고 게시·공유 기능이 없다', asy
 test('결과 카드에는 고유 원자료만 인용한다', async ({ page }) => {
   await completeKoreanFlow(page);
   await expect(page.getByRole('heading', { name: '판정에 사용한 고유 원자료' })).toBeVisible();
-  await expect(page.locator('.citations li')).toHaveCount(1);
+  await expect(page.locator('.citations li')).toHaveCount(2);
 });

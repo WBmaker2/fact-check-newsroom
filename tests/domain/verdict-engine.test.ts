@@ -8,8 +8,10 @@ const caseFile: FactCheckCase = {
     { id: 'a', kind: 'subject', text: '대상', checkable: true, required: true },
     { id: 'b', kind: 'measure', text: '수치', checkable: true, required: true },
   ],
-  initialSourceIds: ['s1', 's2', 's3', 's4'], lateSourceId: 's5',
+  initialSourceIds: ['s1', 's2', 's3'], lateSourceId: 's5',
   initialVerdict: 'insufficient', finalVerdict: 'partly-confirmed',
+  decisionClues: { initial: '핵심 비교', final: '새 자료 비교' },
+  decisionHints: { initial: '표의 조사 대상을 다시 보세요.', final: '새 표를 다시 보세요.' },
   reasonOptions: [{ id: 'r', label: '이유', correctAt: ['initial'] }, { id: 'f', label: '후속 이유', correctAt: ['final'] }],
   headlineOptions: ['정확한 제목'],
 };
@@ -24,19 +26,25 @@ describe('verdict engine', () => {
     expect(countIndependentOrigins(sources)).toBe(1);
   });
 
-  it('matches the configured checkpoint verdict only with exact relations and reasons', () => {
+  it('matches the configured checkpoint verdict and single reason', () => {
     const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: { s1: { a: 'supports', b: 'limits' }, s2: { a: 'supports', b: 'limits' } }, selectedSourceIds: ['s1'], inspectedSourceIds: ['s1'], verdict: 'insufficient', reasonIds: ['r'] });
     expect(result.matched).toBe(true);
   });
 
-  it('rejects a correct verdict when a relationship is wrong', () => {
-    const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: { s1: { a: 'contradicts', b: 'limits' } }, selectedSourceIds: ['s1'], inspectedSourceIds: ['s1'], verdict: 'insufficient', reasonIds: ['r'] });
+  it('uses a concrete case hint when the verdict is wrong', () => {
+    const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: { s1: { a: 'supports', b: 'limits' } }, selectedSourceIds: ['s1'], inspectedSourceIds: ['s1'], verdict: 'confirmed', reasonIds: ['r'] });
     expect(result.matched).toBe(false);
-    expect(result.feedback).toContain('근거 관계');
+    expect(result.feedback).toBe('표의 조사 대상을 다시 보세요.');
   });
 
   it('rejects an extra misconception reason', () => {
     const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: { s1: { a: 'supports', b: 'limits' } }, selectedSourceIds: ['s1'], inspectedSourceIds: ['s1'], verdict: 'insufficient', reasonIds: ['r', 'extra'] });
     expect(result.matched).toBe(false);
+  });
+
+  it('allows no more than two selected evidence sources', () => {
+    const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: {}, selectedSourceIds: ['s1', 's2', 's3'], inspectedSourceIds: [], verdict: 'insufficient', reasonIds: ['r'] });
+    expect(result.matched).toBe(false);
+    expect(result.feedback).toContain('1개 또는 2개');
   });
 });

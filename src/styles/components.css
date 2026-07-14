@@ -38,6 +38,7 @@ th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border);
 th { font-weight: 800; }
 .evidence-pick { min-height: 44px; display: inline-flex; align-items: center; gap: var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; padding: 8px 12px; cursor: pointer; font-weight: 700; }
 .evidence-pick[aria-pressed="true"] { border-color: var(--success); color: var(--success); background: var(--green-soft); }
+.evidence-pick:disabled { cursor: not-allowed; opacity: .55; }
 .evidence-excerpt { margin-top: var(--space-4); padding: var(--space-4); background: var(--bg); border-left: 3px solid var(--accent); }
 .evidence-excerpt > span { color: var(--accent); font: 700 11px/1.4 var(--font-mono); letter-spacing: .03em; }
 .evidence-excerpt blockquote { margin: var(--space-2) 0 0; font-size: 16px; line-height: 1.7; }
@@ -48,19 +49,24 @@ th { font-weight: 800; }
 .relation-row button { min-height: 54px; display: flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 7px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; cursor: pointer; font-size: 13px; }
 .relation-row button svg { width: 16px; flex: 0 0 auto; }
 .relation-row button[aria-pressed="true"] { border: 2px solid var(--accent); background: var(--blue-soft); font-weight: 800; }
+.relation-row.needs-review { padding-inline: var(--space-3); background: var(--gold-soft); border-top-color: var(--warning); }
+.relation-hint { grid-column: 1 / -1; margin: 0; color: var(--warning); font-size: 14px; font-weight: 750; }
 .verdict-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); margin: 0; padding: 0; border: 0; }
 .verdict-guide { margin-bottom: var(--space-6); padding: var(--space-6); background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent); }
 .verdict-guide h2 { margin: var(--space-1) 0 var(--space-5); font-size: 28px; }
 .verdict-claim { padding: var(--space-4); background: var(--bg); }
 .verdict-claim > span { color: var(--accent); font: 700 11px/1.4 var(--font-mono); }
 .verdict-claim blockquote { margin: var(--space-2) 0 0; font: 600 18px/1.6 var(--font-display); }
+.verdict-clue { margin-top: var(--space-3); padding: var(--space-4); color: var(--fg); background: var(--green-soft); border-left: 3px solid var(--success); }
+.verdict-clue p { margin: var(--space-1) 0 0; font-size: 17px; }
 .verdict-guide ol { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin: var(--space-5) 0 0; padding: 0; list-style: none; }
 .verdict-guide li { display: grid; grid-template-columns: 30px 1fr; gap: var(--space-3); align-items: start; }
 .verdict-guide li > span { width: 30px; height: 30px; display: grid; place-items: center; color: var(--accent-contrast); background: var(--accent); border-radius: 50%; font: 700 13px var(--font-mono); }
 .verdict-guide li p { margin: var(--space-1) 0 0; color: var(--muted); font-size: 14px; }
-.verdict-grid button { min-height: 128px; display: grid; grid-template-columns: 32px 1fr; align-content: center; gap: var(--space-2) var(--space-3); padding: var(--space-5); text-align: left; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
-.verdict-grid button svg { grid-row: 1 / 3; color: var(--muted); }
+.verdict-grid button { min-height: 128px; display: grid; grid-template-columns: 32px 1fr; align-content: center; gap: var(--space-1) var(--space-3); padding: var(--space-5); text-align: left; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
+.verdict-grid button svg { grid-row: 1 / 4; color: var(--muted); }
 .verdict-grid button strong { font: 700 20px var(--font-display); }
+.verdict-grid button small { color: var(--accent); font-weight: 750; }
 .verdict-grid button span { color: var(--muted); font-size: 14px; }
 .verdict-grid button[aria-pressed="true"] { border: 2px solid var(--accent); background: var(--blue-soft); }
 .verdict-grid button[aria-pressed="true"] svg { color: var(--accent); }

@@ -7,14 +7,15 @@ import { packRegistry } from '../../src/content/registry';
 describe('VerdictConference', () => {
   const caseFile = packRegistry[0].cases[0];
 
-  it('explains the three actions required to solve step four', () => {
+  it('explains the three simple actions required to solve step four', () => {
     render(<VerdictConference caseFile={caseFile} checkpoint="initial" feedback="" onSubmit={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: '4단계는 이렇게 해결하세요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '세 가지만 하면 돼요' })).toBeInTheDocument();
     expect(screen.getByText(caseFile.claimText)).toBeInTheDocument();
-    expect(screen.getByText('근거와 주장 조각을 비교하세요.')).toBeInTheDocument();
-    expect(screen.getByText('판정 하나를 선택하세요.')).toBeInTheDocument();
-    expect(screen.getByText('판정 이유를 모두 선택하고 확정하세요.')).toBeInTheDocument();
+    expect(screen.getByText(caseFile.decisionClues.initial)).toBeInTheDocument();
+    expect(screen.getByText('핵심 비교를 읽어요.')).toBeInTheDocument();
+    expect(screen.getByText('판정 하나를 골라요.')).toBeInTheDocument();
+    expect(screen.getByText('이유 하나를 골라요.')).toBeInTheDocument();
   });
 
   it('shows completion state as the learner selects a verdict and reasons', async () => {
@@ -23,9 +24,10 @@ describe('VerdictConference', () => {
 
     expect(screen.getByText('판정 선택 필요')).toBeInTheDocument();
     expect(screen.getByText('이유 선택 필요')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /자료로 확인됨/ }));
+    await user.click(screen.getByRole('button', { name: /맞아요.*자료로 확인됨/ }));
     expect(screen.getByText('판정 선택 완료')).toBeInTheDocument();
-    await user.click(screen.getByText('원문 안내의 대상·날짜·예정 상태가 주장과 일치해요.'));
-    expect(screen.getByText('이유 1개 선택됨')).toBeInTheDocument();
+    await user.click(screen.getByText('도서관 원문에 어린이 열람실과 첫째 토요일이 모두 적혀 있어요.'));
+    expect(screen.getByText('이유 선택 완료')).toBeInTheDocument();
+    expect(screen.getAllByRole('radio')).toHaveLength(caseFile.reasonOptions.length);
   });
 });
