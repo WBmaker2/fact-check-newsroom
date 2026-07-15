@@ -47,4 +47,17 @@ describe('verdict engine', () => {
     expect(result.matched).toBe(false);
     expect(result.feedback).toContain('1개 또는 2개');
   });
+
+  it('rejects a selected source that does not explain the expected verdict', () => {
+    const irrelevant = { ...sources[0], id: 'irrelevant', originId: 'irrelevant-origin', assessments: { a: 'irrelevant' as const, b: 'irrelevant' as const } };
+    const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources: [irrelevant], relations: { irrelevant: { a: 'irrelevant', b: 'irrelevant' } }, selectedSourceIds: ['irrelevant'], inspectedSourceIds: ['irrelevant'], verdict: 'insufficient', reasonIds: ['r'] });
+    expect(result.matched).toBe(false);
+    expect(result.feedback).toContain('직접 도움이 되는 자료');
+  });
+
+  it('rejects a selected source whose comparison is incomplete', () => {
+    const result = evaluateDecision({ caseFile, checkpoint: 'initial', sources, relations: { s1: { a: 'supports' } }, selectedSourceIds: ['s1'], inspectedSourceIds: ['s1'], verdict: 'insufficient', reasonIds: ['r'] });
+    expect(result.matched).toBe(false);
+    expect(result.feedback).toContain('다시 비교');
+  });
 });

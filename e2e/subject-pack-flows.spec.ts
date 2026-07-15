@@ -14,7 +14,22 @@ test('네 교과 데스크를 동적으로 보여 준다', async ({ page }) => {
 
 test('의견 조각은 진위 선택에서 제외한다', async ({ page }) => {
   await openKoreanCase(page);
-  await expect(page.getByRole('button', { name: /좋은 소식/ })).toBeDisabled();
+  await expect(page.getByRole('note')).toContainText('판정에서 빼기');
+});
+
+test('단계를 바꾸면 새 제목이 보이고 메인 영역으로 초점이 이동한다', async ({ page }) => {
+  await openKoreanInitialVerdict(page);
+  await expect(page.getByRole('heading', { name: '이 주장은 맞을까요?' })).toBeInViewport();
+  await expect(page.locator('main')).toBeFocused();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(80);
+});
+
+test('이전 단계로 돌아가도 고른 확인할 말을 유지한다', async ({ page }) => {
+  await openKoreanCase(page);
+  for (const name of ['어린이 열람실', '6월 첫째 토요일에 연다']) await page.getByRole('button', { name: new RegExp(name) }).click();
+  await page.getByRole('button', { name: /자료 살펴보기/ }).click();
+  await page.getByRole('button', { name: '확인할 말 다시 보기' }).click();
+  await expect(page.getByRole('button', { name: /어린이 열람실/ })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('출처 렌즈를 확인하기 전에는 근거 분류로 갈 수 없다', async ({ page }) => {

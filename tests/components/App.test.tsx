@@ -17,10 +17,20 @@ describe('App shell and intake', () => {
     await user.click(screen.getByRole('button', { name: '업데이트 내역' }));
     expect(screen.getByRole('dialog', { name: '업데이트 내역' })).toBeInTheDocument();
     expect(screen.getAllByText('2026. 7. 14.')).toHaveLength(5);
+    expect(screen.getByText('학습 흐름과 모바일 사용성 개선')).toBeInTheDocument();
     expect(screen.getByText('초등 난이도 개선')).toBeInTheDocument();
     expect(screen.getByText('4단계 판정 안내 개선')).toBeInTheDocument();
     expect(screen.getByText('근거 분류 자료 다시 보기')).toBeInTheDocument();
     expect(screen.getByText('공개 배포 준비')).toBeInTheDocument();
+  });
+
+  it('opens a printable teacher guide from the start screen', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: '교사용 수업 안내' }));
+    expect(screen.getByRole('dialog', { name: '교사용 수업 안내' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '판정 발문' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '한 장으로 인쇄' })).toBeEnabled();
   });
 
   it('renders four subject desks from the registry', async () => {
@@ -35,7 +45,7 @@ describe('App shell and intake', () => {
     render(<App />);
     await user.click(screen.getByRole('button', { name: '편집 회의 시작' }));
     await user.click(screen.getByRole('button', { name: /국어·매체 사건 선택/ }));
-    expect(screen.getByRole('button', { name: /좋은 소식/ })).toBeDisabled();
+    expect(screen.getByRole('note')).toHaveTextContent(/좋은 소식.*판정에서 빼기/);
     expect(screen.getByText(/느낌을 나타내므로 맞는지 틀린지 확인하지 않아요/)).toBeInTheDocument();
   });
 });

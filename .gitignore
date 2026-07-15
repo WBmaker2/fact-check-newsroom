@@ -4,3 +4,5 @@ playwright-report
 test-results
 coverage
 .DS_Store
+output/playwright/**/.playwright-cli/
+output/playwright/**/implementation-sources-mobile.png

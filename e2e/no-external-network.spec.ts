@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('초기 로드에서 외부 출처 요청이 없다', async ({ page }) => {
-  const external: string[] = []; page.on('request', (request) => { if (!request.url().startsWith('http://127.0.0.1:4173')) external.push(request.url()); });
+test('초기 로드에서 외부 출처 요청이 없다', async ({ page }, testInfo) => {
+  const allowedOrigin = new URL(testInfo.project.use.baseURL as string).origin;
+  const external: string[] = []; page.on('request', (request) => { if (new URL(request.url()).origin !== allowedOrigin) external.push(request.url()); });
   await page.goto('/'); expect(external).toEqual([]);
 });
 

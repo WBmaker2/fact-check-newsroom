@@ -19,6 +19,7 @@ describe('EvidenceBoard', () => {
         onClassify={vi.fn()}
         onToggleEvidence={vi.fn()}
         onContinue={vi.fn()}
+        onBack={vi.fn()}
       />,
     );
 
@@ -35,7 +36,7 @@ describe('EvidenceBoard', () => {
     classified[sources[0].id][caseFile.atoms.find((atom) => atom.checkable)!.id] = 'contradicts';
     const onContinue = vi.fn();
 
-    render(<EvidenceBoard atoms={caseFile.atoms} sources={sources} classified={classified} selectedSources={[sources[0].id]} onClassify={vi.fn()} onToggleEvidence={vi.fn()} onContinue={onContinue} />);
+    render(<EvidenceBoard atoms={caseFile.atoms} sources={sources} classified={classified} selectedSources={[sources[0].id]} onClassify={vi.fn()} onToggleEvidence={vi.fn()} onContinue={onContinue} onBack={vi.fn()} />);
     await user.click(screen.getByRole('button', { name: '첫 번째 판단하기' }));
 
     expect(onContinue).not.toHaveBeenCalled();

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, CheckCircle2, HelpCircle, MinusCircle, PauseCircle, XCircle } from 'lucide-react';
 import type { Checkpoint, FactCheckCase, Verdict } from '../domain/types';
+import { PreviousButton } from './PreviousButton';
 
 const verdicts: { id: Verdict; easyLabel: string; learningLabel: string; description: string; icon: typeof CheckCircle2 }[] = [
   { id: 'confirmed', easyLabel: '맞아요', learningLabel: '자료로 확인됨', description: '중요한 내용이 자료와 같아요.', icon: CheckCircle2 },
@@ -9,10 +10,10 @@ const verdicts: { id: Verdict; easyLabel: string; learningLabel: string; descrip
   { id: 'insufficient', easyLabel: '아직 몰라요', learningLabel: '판단 보류', description: '확인할 자료가 모자라요.', icon: PauseCircle },
 ];
 
-interface Props { caseFile: FactCheckCase; checkpoint: Checkpoint; initialVerdict?: Verdict; feedback: string; onSubmit: (verdict: Verdict, reasonIds: string[]) => void }
-export function VerdictConference({ caseFile, checkpoint, initialVerdict, feedback, onSubmit }: Props) {
-  const [verdict, setVerdict] = useState<Verdict | null>(null);
-  const [reasonIds, setReasonIds] = useState<string[]>([]);
+interface Props { caseFile: FactCheckCase; checkpoint: Checkpoint; initialVerdict?: Verdict; savedVerdict?: Verdict; savedReasonIds?: string[]; feedback: string; onSubmit: (verdict: Verdict, reasonIds: string[]) => void; onBack: () => void }
+export function VerdictConference({ caseFile, checkpoint, initialVerdict, savedVerdict, savedReasonIds = [], feedback, onSubmit, onBack }: Props) {
+  const [verdict, setVerdict] = useState<Verdict | null>(savedVerdict ?? null);
+  const [reasonIds, setReasonIds] = useState<string[]>(savedReasonIds);
   return <section className="page-section" data-od-id={`${checkpoint}-verdict`}>
     <header className="section-heading"><p className="context-line">4 · {checkpoint === 'initial' ? '첫 번째 판단' : '다시 판단하기'}</p><h1>{checkpoint === 'initial' ? '이 주장은 맞을까요?' : '새 자료를 보고 다시 판단해 보세요.'}</h1><p>쉬운 판정 하나와 이유 하나를 고르세요.</p></header>
     {initialVerdict ? <div className="previous-verdict"><span>첫 번째 판단</span><strong>{verdicts.find((item) => item.id === initialVerdict)?.easyLabel}</strong><p>새 자료를 보기 전 생각과 비교해 볼 수 있어요.</p></div> : null}
@@ -30,6 +31,6 @@ export function VerdictConference({ caseFile, checkpoint, initialVerdict, feedba
     <fieldset className="reason-list"><legend>왜 그렇게 생각했나요? 하나만 고르세요.</legend>{caseFile.reasonOptions.map((reason) => <label key={reason.id}><input type="radio" name={`${checkpoint}-reason`} checked={reasonIds[0] === reason.id} onChange={() => setReasonIds([reason.id])} /><span>{reason.label}</span></label>)}</fieldset>
     <div className="verdict-selection-status" role="status" aria-live="polite" aria-label="판정 진행 상태"><span data-complete={Boolean(verdict)}>{verdict ? '판정 선택 완료' : '판정 선택 필요'}</span><span data-complete={reasonIds.length === 1}>{reasonIds.length === 1 ? '이유 선택 완료' : '이유 선택 필요'}</span></div>
     {feedback ? <div className="feedback" role="status"><HelpCircle aria-hidden="true" />{feedback}</div> : null}
-    <div className="action-row"><span>틀려도 괜찮아요. 힌트를 보고 다시 고를 수 있어요.</span><button className="button button-primary" disabled={!verdict || reasonIds.length !== 1} onClick={() => verdict && onSubmit(verdict, reasonIds)}>{checkpoint === 'initial' ? '첫 판단 확인하기' : '마지막 판단 확인하기'}<ArrowRight aria-hidden="true" /></button></div>
+    <div className="action-row"><PreviousButton onClick={onBack} label={checkpoint === 'initial' ? '자료 다시 보기' : '새 자료 다시 보기'} /><span>틀려도 괜찮아요. 힌트를 보고 다시 고를 수 있어요.</span><button className="button button-primary" disabled={!verdict || reasonIds.length !== 1} onClick={() => verdict && onSubmit(verdict, reasonIds)}>{checkpoint === 'initial' ? '첫 판단 확인하기' : '마지막 판단 확인하기'}<ArrowRight aria-hidden="true" /></button></div>
   </section>;
 }

@@ -2,7 +2,6 @@ import { expect, test, type Page } from '@playwright/test';
 import { packRegistry } from '../src/content/registry';
 import type { EvidenceRelation, FactCheckPack, Verdict } from '../src/domain/types';
 
-const dimensionLabels = ['누가 만들었나요', '언제 만들었나요', '어떻게 알아봤나요', '누구·어디 이야기인가요'];
 const relationLabels: Record<EvidenceRelation, string> = {
   supports: '같아요',
   contradicts: '달라요',
@@ -17,21 +16,19 @@ const verdictLabels: Record<Verdict, RegExp> = {
 };
 
 async function inspectVisibleSources(page: Page) {
-  for (const label of dimensionLabels) {
-    for (const button of await page.getByRole('button', { name: new RegExp(label) }).all()) await button.click();
-  }
+  const revealButtons = page.getByRole('button', { name: '네 가지 단서 한눈에 보기' });
+  while (await revealButtons.count()) await revealButtons.first().click();
 }
 
-async function classifyVisibleSources(page: Page, pack: FactCheckPack, sourceIds: string[]) {
+async function classifyChosenSource(page: Page, pack: FactCheckPack, sourceId: string) {
   const caseFile = pack.cases[0];
   const atoms = caseFile.atoms.filter((atom) => atom.checkable);
-  const cards = page.locator('.evidence-source');
-  for (let sourceIndex = 0; sourceIndex < sourceIds.length; sourceIndex += 1) {
-    const source = pack.sources.find((item) => item.id === sourceIds[sourceIndex])!;
-    const rows = cards.nth(sourceIndex).locator('.relation-row');
-    for (let atomIndex = 0; atomIndex < atoms.length; atomIndex += 1) {
-      await rows.nth(atomIndex).getByRole('button', { name: relationLabels[source.assessments[atoms[atomIndex].id]] }).click();
-    }
+  const source = pack.sources.find((item) => item.id === sourceId)!;
+  const card = page.locator('.evidence-source').filter({ hasText: source.publisherLabel }).first();
+  await card.getByRole('button', { name: /판정 근거로 사용/ }).click();
+  const rows = card.locator('.relation-row');
+  for (let atomIndex = 0; atomIndex < atoms.length; atomIndex += 1) {
+    await rows.nth(atomIndex).getByRole('button', { name: relationLabels[source.assessments[atoms[atomIndex].id]] }).click();
   }
 }
 
@@ -44,8 +41,7 @@ async function completePack(page: Page, pack: FactCheckPack) {
   await page.getByRole('button', { name: /자료 살펴보기/ }).click();
   await inspectVisibleSources(page);
   await page.getByRole('button', { name: /자료와 주장 비교하기/ }).click();
-  await classifyVisibleSources(page, pack, caseFile.initialSourceIds);
-  await page.locator('.evidence-source').first().getByRole('button', { name: /판정 근거로 사용/ }).click();
+  await classifyChosenSource(page, pack, caseFile.initialSourceIds[0]);
   await page.getByRole('button', { name: /첫 번째 판단하기/ }).click();
   await page.getByRole('button', { name: verdictLabels[caseFile.initialVerdict] }).click();
   await page.getByText(caseFile.reasonOptions.find((reason) => reason.correctAt.includes('initial'))!.label).click();
@@ -53,8 +49,7 @@ async function completePack(page: Page, pack: FactCheckPack) {
 
   await inspectVisibleSources(page);
   await page.getByRole('button', { name: /새 자료 비교하기/ }).click();
-  await classifyVisibleSources(page, pack, [caseFile.lateSourceId]);
-  await page.getByRole('button', { name: /판정 근거로 사용/ }).click();
+  await classifyChosenSource(page, pack, caseFile.lateSourceId);
   await page.getByRole('button', { name: /새 자료로 다시 판단하기/ }).click();
   await page.getByRole('button', { name: verdictLabels[caseFile.finalVerdict] }).click();
   await page.getByText(caseFile.reasonOptions.find((reason) => reason.correctAt.includes('final'))!.label).click();

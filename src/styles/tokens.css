@@ -37,6 +37,7 @@ body { margin: 0; min-width: 320px; color: var(--fg); background: var(--bg); fon
 button, input { font: inherit; }
 button { color: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 3px; }
+main:focus { outline: none; }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.18; text-wrap: balance; }
 p { text-wrap: pretty; }

@@ -23,3 +23,13 @@ test('감소된 움직임에서도 시작 동작이 가능하다', async ({ page
   await page.emulateMedia({ reducedMotion: 'reduce' }); await page.goto('/'); await page.getByRole('button', { name: '편집 회의 시작' }).click();
   await expect(page.getByRole('heading', { name: '어느 사건부터 살펴볼까요?' })).toBeVisible();
 });
+
+test('모바일 단계 표시는 내부 가로 스크롤 없이 현재 단계를 보여 준다', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '편집 회의 시작' }).click();
+  await page.getByRole('button', { name: /국어·매체 사건 선택/ }).click();
+  await expect(page.getByText('1/5')).toBeVisible();
+  const overflow = await page.locator('.step-progress').evaluate((element) => element.scrollWidth > element.clientWidth);
+  expect(overflow).toBe(false);
+});

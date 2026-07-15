@@ -18,6 +18,11 @@ describe('newsroomReducer', () => {
     expect(next.relations).toEqual({ s1: { a1: 'supports' } });
   });
 
+  it('reveals all source dimensions with one action', () => {
+    const next = newsroomReducer(initialState, { type: 'INSPECT_MANY', sourceId: 's1', dimensions: ['publisher', 'date', 'method', 'scope'] });
+    expect(next.inspectedDimensions.s1).toEqual(['publisher', 'date', 'method', 'scope']);
+  });
+
   it('limits selected evidence to two sources', () => {
     let state = initialState;
     for (const sourceId of ['s1', 's2', 's3', 's4']) state = newsroomReducer(state, { type: 'TOGGLE_EVIDENCE', sourceId });
@@ -48,5 +53,12 @@ describe('newsroomReducer', () => {
   it('resets all in-memory progress', () => {
     const selected = newsroomReducer(initialState, { type: 'SELECT_PACK', packId: 'korean-media' });
     expect(newsroomReducer(selected, { type: 'RESET' })).toEqual(initialState);
+  });
+
+  it('moves back without clearing claim choices', () => {
+    const selected = newsroomReducer({ ...initialState, stage: 'claim', packId: 'korean-media' }, { type: 'TOGGLE_ATOM', atomId: 'target' });
+    const sources = newsroomReducer(selected, { type: 'GO', stage: 'sources' });
+    const back = newsroomReducer(sources, { type: 'BACK' });
+    expect(back).toMatchObject({ stage: 'claim', selectedAtomIds: ['target'] });
   });
 });
